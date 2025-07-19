@@ -3,103 +3,265 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Passport Expiry Checker</title>
-  
-  <!-- Favicon (Passport Icon using Emoji or you can use a file instead) -->
-  <link rel="icon" href="https://img.icons8.com/ios-filled/50/228B22/passport.png" type="image/png" />
-
-  <!-- jQuery -->
+  <title>Travel Tools</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'fade-in-down': 'fadeInDown 0.5s ease-out',
+          },
+          keyframes: {
+            fadeInDown: {
+              '0%': { opacity: '0', transform: 'translateY(-10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .age-category {
+      font-weight: bold;
+      margin-top: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .infant {
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+    }
+
+    .child {
+      background-color: #fff8e1;
+      color: #ff8f00;
+      border: 1px solid #ffcc80;
+    }
+
+    .adult {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+
+    input[type="date"] {
+      appearance: none;
+      -webkit-appearance: none;
+      background-color: white;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.5);
+      cursor: pointer;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator:hover {
+      filter: invert(0.3);
+    }
+  </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white shadow-lg rounded-2xl p-8 max-w-xl w-full space-y-6">
-    <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m0 0a1 1 0 011-1h6a1 1 0 011 1v4M8 3h8m4 0v18a2 2 0 01-2 2H6a2 2 0 01-2-2V3h16z" />
-      </svg>
-      Passport Expiry Checker
-    </h1>
+<body class="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen flex flex-col items-center justify-start py-10 px-4">
 
-    <div class="space-y-4">
-      <div>
-        <label for="departureDate" class="block font-semibold text-gray-700 mb-1">Expected Departure Date</label>
-        <input type="date" id="departureDate" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      </div>
-
-      <div>
-        <label for="expiryDate" class="block font-semibold text-gray-700 mb-1">Passport Expiry Date</label>
-        <input type="date" id="expiryDate" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-      </div>
-
-      <div id="result" class="text-lg text-green-600 font-medium mt-4 hidden"></div>
-      <div id="warning" class="text-yellow-600 font-medium mt-2 hidden"></div>
-      <div id="error" class="text-red-600 font-medium mt-2 hidden"></div>
-    </div>
+  <!-- Tabs -->
+  <div class="flex justify-center mb-6 space-x-2">
+    <div class="nav-tab active px-4 py-2 cursor-pointer bg-white border-b-2 border-blue-500 font-semibold rounded-t-md shadow-sm transition duration-300 hover:bg-blue-50" data-tab="age-calculator">Age Calculator</div>
+    <div class="nav-tab px-4 py-2 cursor-pointer bg-gray-100 border-b-2 border-transparent font-semibold rounded-t-md shadow-sm transition duration-300 hover:bg-blue-50" data-tab="passport-checker">Passport Checker</div>
   </div>
 
+  <!-- Container -->
+  <div class="w-full max-w-4xl bg-white rounded-xl shadow-lg p-6">
+
+    <!-- Age Calculator Tab -->
+    <div id="age-calculator" class="tab-content active transition duration-300">
+      <h1 class="text-2xl font-bold text-gray-800 mb-4">🧮 Age Calculator</h1>
+
+      <div class="space-y-4">
+        <div>
+          <label for="birth-date" class="block font-semibold text-gray-700 mb-1">Birth Date</label>
+          <input type="date" id="birth-date" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div>
+          <label for="arrival-date" class="block font-semibold text-gray-700 mb-1">Expected Arrival (Return) Date</label>
+          <input type="date" id="arrival-date" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" />
+        </div>
+
+        <button id="calculate-btn" class="mt-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-lg w-full shadow-md transition-all duration-300">
+          🎯 Calculate Age
+        </button>
+
+        <div id="result" class="hidden animate-fade-in-down mt-6 p-4 bg-gray-50 rounded-lg">
+          <h2 class="text-xl font-bold text-gray-800 mb-2">Your Age</h2>
+          <div id="age-display" class="text-2xl font-bold text-green-600 mb-2"></div>
+          <div id="age-category" class="age-category"></div>
+
+          <div class="mt-4">
+            <div id="arrival-age" class="text-blue-800 font-medium"></div>
+            <div id="arrival-category" class="age-category mt-2"></div>
+          </div>
+
+          <div class="age-details mt-4 space-y-2 text-gray-700">
+            <p id="next-birthday"></p>
+            <p id="days-lived"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Passport Checker Tab -->
+    <div id="passport-checker" class="tab-content hidden transition duration-300">
+      <h1 class="text-2xl font-bold text-gray-800 mb-4">🛂 Passport Expiry Checker</h1>
+
+      <div class="space-y-4">
+        <div>
+          <label for="departureDate" class="block font-semibold text-gray-700 mb-1">Expected Departure / Arrival Date</label>
+          <input type="date" id="departureDate" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div>
+          <label for="expiryDate" class="block font-semibold text-gray-700 mb-1">Passport Expiry Date</label>
+          <input type="date" id="expiryDate" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <div id="passport-result" class="text-lg text-green-600 font-medium mt-4 hidden"></div>
+        <div id="passport-warning" class="text-yellow-600 font-medium mt-2 hidden"></div>
+        <div id="passport-error" class="text-red-600 font-medium mt-2 hidden"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-10 text-gray-500 text-sm text-center">
+    © 2025 Travel Tools. © Software Solution House
+  </footer>
+
   <script>
-    function calculateDifference(start, end) {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
+    $(document).ready(function () {
+      $('.nav-tab').click(function () {
+        $('.nav-tab').removeClass('active border-blue-500').addClass('border-transparent');
+        $(this).addClass('active border-blue-500').removeClass('border-transparent');
+        const tabId = $(this).data('tab');
+        $('.tab-content').addClass('hidden');
+        $('#' + tabId).removeClass('hidden');
+      });
 
-      if (endDate < startDate) return null;
+      $('#calculate-btn').click(function () {
+        const dateStr = $('#birth-date').val();
+        const arrivalDateStr = $('#arrival-date').val();
+        if (!dateStr) return alert('Please select your birth date');
+        const birthDate = new Date(dateStr);
+        const today = new Date();
+        if (birthDate > today) return alert('Birth date cannot be in the future');
 
-      let years = endDate.getFullYear() - startDate.getFullYear();
-      let months = endDate.getMonth() - startDate.getMonth();
-      let days = endDate.getDate() - startDate.getDate();
+        let ageYears = today.getFullYear() - birthDate.getFullYear();
+        let ageMonths = today.getMonth() - birthDate.getMonth();
+        let ageDays = today.getDate() - birthDate.getDate();
+        if (ageDays < 0) { ageMonths--; ageDays += new Date(today.getFullYear(), today.getMonth(), 0).getDate(); }
+        if (ageMonths < 0) { ageYears--; ageMonths += 12; }
 
-      if (days < 0) {
-        months -= 1;
-        days += new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate();
-      }
-
-      if (months < 0) {
-        years -= 1;
-        months += 12;
-      }
-
-      return { years, months, days };
-    }
-
-    function monthsBetween(start, end) {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
-
-      let months = (endDate.getFullYear() - startDate.getFullYear()) * 12;
-      months += endDate.getMonth() - startDate.getMonth();
-
-      if (endDate.getDate() < startDate.getDate()) {
-        months -= 1;
-      }
-
-      return months;
-    }
-
-    $('#departureDate, #expiryDate').on('change', function () {
-      const dep = $('#departureDate').val();
-      const exp = $('#expiryDate').val();
-
-      $('#error, #result, #warning').hide();
-
-      if (dep && exp) {
-        const result = calculateDifference(dep, exp);
-        if (result) {
-          $('#result')
-            .text(`Passport expires ${result.years} year(s), ${result.months} month(s), and ${result.days} day(s) after your departure.`)
-            .fadeIn();
-
-          const monthsDiff = monthsBetween(dep, exp);
-
-          if (monthsDiff <= 6) {
-            $('#warning').text('⚠️ Warning: Passport expires within 6 months of departure!').fadeIn();
-          }
+        const totalMonths = ageYears * 12 + ageMonths;
+        let ageCategory = '', categoryClass = '';
+        if (totalMonths < 24) {
+          ageCategory = 'Infant (under 2 years)';
+          categoryClass = 'infant';
+        } else if (totalMonths < 144) {
+          ageCategory = 'Child (2–11 years)';
+          categoryClass = 'child';
         } else {
-          $('#error').text('❌ Passport expiry must be after the departure date.').fadeIn();
+          ageCategory = 'Adult (12+ years)';
+          categoryClass = 'adult';
         }
+
+        let nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+        if (nextBirthday < today) nextBirthday.setFullYear(nextBirthday.getFullYear() + 1);
+        const daysUntilNextBirthday = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+        const daysLived = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24));
+
+        $('#age-display').html(`🎂 ${ageYears} years, ${ageMonths} months, ${ageDays} days old`);
+        $('#age-category').text(ageCategory).attr('class', `age-category ${categoryClass}`);
+        $('#next-birthday').text(`📅 Next birthday in ${daysUntilNextBirthday} days (${nextBirthday.toDateString()})`);
+        $('#days-lived').text(`📌 You have lived ${daysLived.toLocaleString()} days`);
+
+        // Arrival Age Calculation
+        if (arrivalDateStr) {
+          const arrivalDate = new Date(arrivalDateStr);
+          if (birthDate > arrivalDate) return alert('Birth date cannot be after arrival date.');
+          let ay = arrivalDate.getFullYear() - birthDate.getFullYear();
+          let am = arrivalDate.getMonth() - birthDate.getMonth();
+          let ad = arrivalDate.getDate() - birthDate.getDate();
+          if (ad < 0) { am--; ad += new Date(arrivalDate.getFullYear(), arrivalDate.getMonth(), 0).getDate(); }
+          if (am < 0) { ay--; am += 12; }
+
+          const totalArrivalMonths = ay * 12 + am;
+          let arrivalCategory = '', arrivalClass = '';
+          if (totalArrivalMonths < 24) {
+            arrivalCategory = 'Infant on arrival (under 2 years)';
+            arrivalClass = 'infant';
+          } else if (totalArrivalMonths < 144) {
+            arrivalCategory = 'Child on arrival (2–11 years)';
+            arrivalClass = 'child';
+          } else {
+            arrivalCategory = 'Adult on arrival (12+ years)';
+            arrivalClass = 'adult';
+          }
+
+          $('#arrival-age').html(`🚀 Age at arrival: ${ay} years, ${am} months, ${ad} days`);
+          $('#arrival-category').text(arrivalCategory).attr('class', `age-category ${arrivalClass}`);
+        } else {
+          $('#arrival-age').html(`📌 Arrival date not selected. Skipping age-at-arrival check.`);
+          $('#arrival-category').attr('class', '').text('');
+        }
+
+        $('#result').removeClass('hidden');
+      });
+
+      // Passport Checker
+      function calculateDifference(start, end) {
+        const s = new Date(start), e = new Date(end);
+        if (e < s) return null;
+        let y = e.getFullYear() - s.getFullYear();
+        let m = e.getMonth() - s.getMonth();
+        let d = e.getDate() - s.getDate();
+        if (d < 0) { m--; d += new Date(e.getFullYear(), e.getMonth(), 0).getDate(); }
+        if (m < 0) { y--; m += 12; }
+        return { years: y, months: m, days: d };
       }
+
+      function monthsBetween(start, end) {
+        const s = new Date(start), e = new Date(end);
+        let months = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
+        if (e.getDate() < s.getDate()) months--;
+        return months;
+      }
+
+      $('#departureDate, #expiryDate').on('change', function () {
+        const dep = $('#departureDate').val();
+        const exp = $('#expiryDate').val();
+        $('#passport-error, #passport-result, #passport-warning').addClass('hidden');
+        if (dep && exp) {
+          const result = calculateDifference(dep, exp);
+          if (result) {
+            $('#passport-result').text(`✅ Passport expires ${result.years} year(s), ${result.months} month(s), and ${result.days} day(s) after your departure.`).removeClass('hidden');
+            if (monthsBetween(dep, exp) <= 8) {
+              $('#passport-warning').text('⚠️ Warning: Passport expires within 8 months of departure!').removeClass('hidden');
+            }
+          } else {
+            $('#passport-error').text('❌ Passport expiry must be after the departure date.').removeClass('hidden');
+          }
+        }
+      });
     });
   </script>
 </body>
